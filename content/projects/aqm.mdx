@@ -1,0 +1,60 @@
+---
+title: Air Quality Monitor
+description: A portable air quality monitor built with STM32, sensors, and an LCD display to measure PM2.5 and CO₂ levels. Designed to provide low-cost, real-time Air Quality Index (AQI) readings to help users make informed health decisions in polluted environments.
+date: "2022-11-25"
+repository: talhaamir12/AirQualityMonitor
+published: true
+---
+
+# 🌍 Air Quality Monitor
+
+## Overview
+This project is a **low-cost, portable air quality monitoring device** designed to measure and display local air quality in real time. It addresses the urgent need for accessible air quality monitoring in regions such as South Asia, where pollution levels are often many times higher than recommended health standards . 
+
+Our device uses an **STM32 Nucleo-64 microcontroller**, PM2.5 and CO₂ sensors, and a 16x2 LCD display to calculate and display the **Air Quality Index (AQI)**. The monitor helps users make informed decisions about when it is safe to be outdoors, especially in heavily polluted environments.
+
+---
+
+## ✨ Features
+- **Real-time AQI measurement** based on PM2.5 and CO₂ concentrations  
+- **Mini LCD display** that shows air quality values (0–500 AQI) with health recommendations:
+  - *Good* → Safe to go outside  
+  - *Moderate* → Go outside with caution  
+  - *Poor* → Stay indoors to reduce exposure  
+- **Portable design** powered by 4 AA batteries  
+- **User-friendly controls** with ON/OFF and record buttons, plus audible beeps for feedback  
+- **Voltage level shifting** to ensure safe sensor integration with STM32 (5V → 3.3V) 
+
+---
+
+## 🛠 Hardware
+- STM32 Nucleo-64 microcontroller  
+- PM2.5 sensor (particulate matter)  
+- SCD-41 CO₂ temperature sensor  
+- 16x2 LCD display  
+- Resistors for level shifting (10kΩ & 22kΩ)  
+- Push buttons for power and recording  
+
+---
+
+## 📊 Software & Principles
+- Implemented **Air Quality Index (AQI) equation** to compute pollution levels   
+- Used **OR logic gate principles** to signal unsafe conditions if either PM2.5 or CO₂ is above thresholds  
+- Voltage divider for safe sensor interfacing  
+- Programmed using **STM32CubeIDE** in C  
+
+---
+
+## 🔍 Testing & Validation
+- Verified power-on functionality with audible feedback  
+- Validated AQI calculations against manual computations  
+- Tested voltage level shifting with a multimeter to ensure stable 3.3V supply to sensors  
+- Confirmed correct LCD outputs and health recommendations at different AQI ranges  
+
+---
+
+## 🌱 Impact
+Air pollution is a major health risk, reducing life expectancy across South Asia by several years . Existing air quality monitors are often too expensive for households in low-income regions. This device offers a **low-cost, accessible alternative**, empowering people to take precautions and protect their health.
+
+---
+

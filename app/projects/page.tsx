@@ -20,9 +20,9 @@ export default async function ProjectsPage() {
     return acc;
   }, {} as Record<string, number>);
 
-  const featured = allProjects.find((project) => project.slug === "unkey")!;
-  const top2 = allProjects.find((project) => project.slug === "planetfall")!;
-  const top3 = allProjects.find((project) => project.slug === "highstorm")!;
+  const featured = allProjects.find((project) => project.slug === "theia")!;
+  const top2 = allProjects.find((project) => project.slug === "safespace")!;
+  const top3 = allProjects.find((project) => project.slug === "mvmengine")!;
   const sorted = allProjects
     .filter((p) => p.published)
     .filter(
@@ -31,11 +31,17 @@ export default async function ProjectsPage() {
         project.slug !== top2.slug &&
         project.slug !== top3.slug,
     )
-    .sort(
-      (a, b) =>
+    .sort((a, b) => {
+      // Sort WIP projects first
+      if (a.status === "wip" && b.status !== "wip") return -1;
+      if (b.status === "wip" && a.status !== "wip") return 1;
+      
+      // Then sort by date within each group
+      return (
         new Date(b.date ?? Number.POSITIVE_INFINITY).getTime() -
-        new Date(a.date ?? Number.POSITIVE_INFINITY).getTime(),
-    );
+        new Date(a.date ?? Number.POSITIVE_INFINITY).getTime()
+      );
+    });
 
   return (
     <div className="relative pb-16">
@@ -46,7 +52,7 @@ export default async function ProjectsPage() {
             Projects
           </h2>
           <p className="mt-4 text-zinc-400">
-            Some of the projects are from work and some are on my own time.
+            A mix of lab projects alongside personal builds from my spare time and hobbies.
           </p>
         </div>
         <div className="w-full h-px bg-zinc-800" />
@@ -103,34 +109,51 @@ export default async function ProjectsPage() {
         </div>
         <div className="hidden w-full h-px md:block bg-zinc-800" />
 
-        <div className="grid grid-cols-1 gap-4 mx-auto lg:mx-0 md:grid-cols-3">
-          <div className="grid grid-cols-1 gap-4">
-            {sorted
-              .filter((_, i) => i % 3 === 0)
-              .map((project) => (
-                <Card key={project.slug}>
-                  <Article project={project} views={views[project.slug] ?? 0} />
-                </Card>
-              ))}
-          </div>
-          <div className="grid grid-cols-1 gap-4">
-            {sorted
-              .filter((_, i) => i % 3 === 1)
-              .map((project) => (
-                <Card key={project.slug}>
-                  <Article project={project} views={views[project.slug] ?? 0} />
-                </Card>
-              ))}
-          </div>
-          <div className="grid grid-cols-1 gap-4">
-            {sorted
-              .filter((_, i) => i % 3 === 2)
-              .map((project) => (
-                <Card key={project.slug}>
-                  <Article project={project} views={views[project.slug] ?? 0} />
-                </Card>
-              ))}
-          </div>
+        <div className="max-w-7xl mx-auto space-y-6">
+          {sorted.map((project) => (
+            <Card key={project.slug}>
+              <Link href={`/projects/${project.slug}`}>
+                <article className="relative w-full h-full p-6 md:p-8">
+                  <div className="flex items-center justify-between gap-2 mb-4">
+                    <div className="text-xs text-zinc-100">
+                      {project.date ? (
+                        <time dateTime={new Date(project.date).toISOString()}>
+                          {Intl.DateTimeFormat(undefined, {
+                            dateStyle: "medium",
+                          }).format(new Date(project.date))}
+                        </time>
+                      ) : (
+                        <span>SOON</span>
+                      )}
+                    </div>
+                    <span className="flex items-center gap-1 text-xs text-zinc-500">
+                      <Eye className="w-4 h-4" />{" "}
+                      {Intl.NumberFormat("en-US", { notation: "compact" }).format(
+                        views[project.slug] ?? 0,
+                      )}
+                    </span>
+                  </div>
+
+                  <h2 className={`text-xl font-bold text-zinc-100 group-hover:text-white sm:text-2xl font-display ${project.status === "wip" ? "flex items-center" : ""}`}>
+                    {project.title}
+                    {project.status === "wip" && (
+                      <span className="ml-2 px-2 py-1 text-xs bg-yellow-600/20 text-yellow-400 rounded-full">
+                        WIP
+                      </span>
+                    )}
+                  </h2>
+                  <p className="mt-3 leading-7 duration-150 text-zinc-400 group-hover:text-zinc-300">
+                    {project.description}
+                  </p>
+                  <div className="mt-4">
+                    <p className="text-zinc-200 hover:text-zinc-50 text-sm">
+                      Read more <span aria-hidden="true">&rarr;</span>
+                    </p>
+                  </div>
+                </article>
+              </Link>
+            </Card>
+          ))}
         </div>
       </div>
     </div>

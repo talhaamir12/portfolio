@@ -6,21 +6,21 @@ import { Analytics } from "./components/analytics";
 
 export const metadata: Metadata = {
   title: {
-    default: "chronark.com",
-    template: "%s | chronark.com",
+    default: "Talha Amir",
+    template: "%s | Talha Amir",
   },
-  description: "Co-founder of unkey.dev and founder of planetfall.io",
+  description: "Passionate about embedded systems, AI, and building technology with real-world impact.",
   openGraph: {
-    title: "chronark.com",
+    title: "Talha Amir",
     description:
-      "Co-founder of unkey.dev and founder of planetfall.io",
-    url: "https://chronark.com",
-    siteName: "chronark.com",
+      "Passionate about embedded systems, AI, and building technology with real-world impact.",
+    url: "https://talhas.ca",
+    siteName: "Talha Amir",
     images: [
       {
-        url: "https://chronark.com/og.png",
-        width: 1920,
-        height: 1080,
+        url: "https://talhas.ca/og.png",
+        width: 2880,
+        height: 1440,
       },
     ],
     locale: "en-US",
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     },
   },
   twitter: {
-    title: "Chronark",
+    title: "Talha Amir",
     card: "summary_large_image",
   },
   icons: {

@@ -1,0 +1,289 @@
+---
+title: "Real-Time Executive (RTX)"
+description: "A comprehensive real-time operating system implementation for ARM Cortex-M4 microprocessors, featuring multitasking, dynamic memory management, and preemptive scheduling with Earliest Deadline First (EDF) algorithm."
+date: "2025-08-01"
+repository: "https://github.com/talhaamir12/rtx-project"
+published: true
+---
+
+# Real-Time Executive (RTX) Development Project
+
+**Development of a Real-Time Executive**
+
+A comprehensive real-time operating system implementation for ARM Cortex-M4 microprocessors, featuring multitasking, dynamic memory management, and preemptive scheduling with Earliest Deadline First (EDF) algorithm.
+
+## Project Overview
+
+This project involves building a complete RTX from the ground up over three major deliverables. The system runs on STM32F401RE/STM32F411RE microprocessors and provides fundamental OS services including task management, memory allocation, and real-time scheduling capabilities.
+
+### System Specifications
+- **Target Platform**: STM32F401RE/STM32F411RE Nucleo-64 boards
+- **Memory**: 96KB RAM, 512KB Flash
+- **Architecture**: ARM Cortex-M4 with SVC and PendSV interrupt support
+- **Development Environment**: STM32CubeIDE
+- **Version Control**: GitLab integration with automated testing
+
+## Project Structure
+
+```
+rtx-project/
+├── Core/
+│   ├── Inc/
+│   │   ├── common.h         # Common definitions and macros
+│   │   ├── k_task.h         # Task management API
+│   │   └── k_mem.h          # Memory management API
+│   └── Src/
+│       ├── main.c           # Application entry point
+│       ├── k_task.c         # Task management implementation
+│       ├── k_mem.c          # Memory allocator implementation
+│       ├── k_svc.c          # System call handlers
+│       └── stm32f4xx_it.c   # Interrupt handlers
+├── STM32F401RETX_FLASH.ld   # Linker script
+├── .cproject                # STM32CubeIDE project file
+└── README.md
+```
+
+## Deliverables
+
+### Deliverable 1: Cooperative Multitasking
+**Objective**: Implement basic task management with cooperative yielding
+
+**Key Features**:
+- Task Control Block (TCB) design and management
+- Round-robin cooperative scheduling
+- Task creation, termination, and information retrieval
+- SVC-based kernel entry points
+- Context switching using PendSV interrupt
+
+**API Functions**:
+- `osKernelInit()` - Initialize kernel data structures
+- `osCreateTask(TCB* task)` - Create new task
+- `osKernelStart()` - Start task execution
+- `osYield()` - Cooperative task yielding
+- `osTaskInfo(task_t TID, TCB* task_copy)` - Task information retrieval
+- `osGetTID()` - Get current task ID
+- `osTaskExit()` - Terminate current task
+
+### Deliverable 2: Dynamic Memory Management
+**Objective**: Implement First Fit memory allocation with coalescing
+
+**Key Features**:
+- Heap management with proper bounds checking
+- First Fit allocation algorithm
+- Memory coalescing on deallocation
+- Task-based memory ownership
+- 4-byte alignment enforcement
+- Metadata management for allocated/free blocks
+
+**API Functions**:
+- `k_mem_init()` - Initialize memory management system
+- `k_mem_alloc(size_t size)` - Allocate memory block
+- `k_mem_dealloc(void* ptr)` - Deallocate memory block
+- `k_mem_count_extfrag(size_t size)` - Count external fragmentation
+
+### Deliverable 3: Preemptive Real-Time Scheduling
+**Objective**: Add preemptive EDF scheduling with timer-based interrupts
+
+**Key Features**:
+- SysTick timer integration (1ms interrupts)
+- Earliest Deadline First (EDF) scheduler
+- Dynamic stack allocation for tasks
+- Task sleeping and periodic execution
+- Priority-based preemption
+- Deadline management and modification
+
+**API Functions**:
+- `osSleep(int timeInMs)` - Put task to sleep
+- `osPeriodYield()` - Yield for periodic tasks
+- `osSetDeadline(int deadline, task_t TID)` - Modify task deadline
+- `osCreateDeadlineTask(int deadline, TCB* task)` - Create task with custom deadline
+
+## Technical Architecture
+
+### Task Control Block (TCB)
+```c
+typedef struct task_control_block {
+    void (*ptask)(void* args);    // Entry point function
+    U32 stack_high;               // Stack start address (high)
+    task_t tid;                   // Task identifier
+    U8 state;                     // Task state (DORMANT/READY/RUNNING/SLEEPING)
+    U16 stack_size;               // Stack size (multiple of 8)
+    // Additional fields as needed by implementation
+} TCB;
+```
+
+### Task States
+- **DORMANT (0)**: Task terminated or not yet created
+- **READY (1)**: Task can be scheduled but not currently running
+- **RUNNING (2)**: Task currently executing
+- **SLEEPING (3)**: Task blocked for specified time period
+
+### Memory Layout
+```
+High Address: _estack
+             ┌─────────────────┐
+             │     Stack       │ ← _estack - _Min_Stack_Size
+             ├─────────────────┤
+             │      Heap       │ ← Dynamic allocation area
+             ├─────────────────┤
+             │   Static Data   │ ← _img_end
+             ├─────────────────┤
+             │   Code/Data     │
+Low Address: │  0x20000000     │
+             └─────────────────┘
+```
+
+## Development Environment Setup
+
+### Prerequisites
+- STM32CubeIDE (latest version)
+- STM32F401RE or STM32F411RE Nucleo-64 board
+- GitLab account for University of Waterloo
+- Serial terminal for debugging output
+
+### Getting Started
+
+1. **Clone Repository**
+   ```bash
+   git clone <your-gitlab-repo-url>
+   cd rtx-project
+   ```
+
+2. **Open in STM32CubeIDE**
+   - Launch STM32CubeIDE
+   - Import existing project
+   - Double-click the `.cproject` file
+
+3. **Build and Flash**
+   - Connect Nucleo board via USB
+   - Click "Run" button to build and flash
+   - Verify "Download verified successfully" message
+
+4. **Setup Serial Console**
+   - Open Console view (Window → Show View → Console)
+   - Create new Command Shell Console
+   - Select Serial Port connection
+   - Configure: 115200 baud, 8 data bits, no parity, 1 stop bit
+
+## Testing and Validation
+
+### Automated Testing
+- Test cases replace `main.c` during evaluation
+- All kernel functionality must be in separate modules
+- Tests verify API compliance and functionality
+- Performance benchmarks for memory allocation efficiency
+
+### Manual Testing Guidelines
+1. **Unit Testing**: Create individual test cases for each module
+2. **Integration Testing**: Verify component interactions
+3. **Stress Testing**: Test under heavy load conditions
+4. **Timing Analysis**: Measure response times and deadline adherence
+
+### Debug Strategies
+- Use simulation waveforms for timing analysis
+- Monitor serial output for runtime information
+- Leverage SWV (Serial Wire Viewer) for advanced debugging
+- Implement debug prints with conditional compilation
+
+## Design Considerations
+
+### Performance Requirements
+- **Memory Allocation**: O(N) worst-case complexity acceptable
+- **Task Switching**: Minimize context switch overhead
+- **Interrupt Latency**: Keep interrupt handlers lightweight
+- **Real-time Constraints**: Meet all task deadlines under normal load
+
+### Architecture Constraints
+- **No Standard Library**: Prohibited except for `printf()`
+- **No `malloc()`**: Implement custom memory allocator
+- **SVC Requirement**: All kernel functions must use SVC calls
+- **Stack Alignment**: Maintain 8-byte stack alignment
+- **Memory Alignment**: 4-byte alignment for all allocations
+
+### Race Condition Prevention
+- Disable interrupts during critical sections
+- Careful ordering of context switch operations
+- Atomic operations for shared data structures
+- Proper interrupt priority configuration
+
+## API Reference
+
+### Return Values
+```c
+#define RTX_OK    0    // Success
+#define RTX_ERR  -1    // Error/Failure
+```
+
+### Task Management Macros
+```c
+#define TID_NULL     0      // NULL task identifier
+#define MAX_TASKS    16     // Maximum concurrent tasks
+#define STACK_SIZE   0x200  // Minimum stack size (512 bytes)
+```
+
+## Memory Management Details
+
+### Heap Initialization
+- Heap starts at `_img_end + offset`
+- Heap ends at `_estack - _Min_Stack_Size`
+- Initial free block spans entire heap
+- Metadata stored within allocated blocks
+
+### First Fit Algorithm
+1. Start from beginning of free memory
+2. Find first block ≥ requested size
+3. Split block if significantly larger
+4. Update metadata and free list
+5. Return pointer after metadata
+
+### Coalescing Strategy
+- Immediate coalescing on deallocation
+- Check adjacent blocks (before and after)
+- Merge contiguous free regions
+- Update free list accordingly
+
+## Real-Time Scheduling
+
+### EDF Implementation
+- Sort ready tasks by deadline (ascending)
+- Break ties using Task ID (lowest first)
+- Preempt when higher priority task becomes ready
+- Handle deadline modifications dynamically
+
+### SysTick Integration
+```c
+void SysTick_Handler(void) {
+    HAL_IncTick();  // Required for HAL functionality
+    
+    // Custom RTX timing logic here
+    // Update task deadlines
+    // Check for preemption
+    // Wake sleeping tasks
+}
+```
+
+## Troubleshooting
+
+### Common Issues
+1. **Hard Faults**: Check stack alignment and memory access
+2. **Timing Issues**: Verify SysTick configuration and interrupt priorities
+3. **Memory Corruption**: Validate metadata integrity and bounds checking
+4. **Context Switch Problems**: Ensure proper register saving/restoring
+
+### Debug Techniques
+- Add debug prints with task IDs and timestamps
+- Monitor stack usage to detect overflow
+- Use breakpoints in exception handlers
+- Validate data structures during runtime
+
+## Resources
+
+### Documentation
+- ARM Cortex-M4 Technical Reference Manual
+- STM32F401/F411 Reference Manual
+- STM32CubeIDE User Guide
+- Real-Time Systems Design Principles
+
+---
+
+**Important**: This RTX implementation is designed for cooperative, non-malicious software in an educational environment. It does not include security features or protection against malicious code.
